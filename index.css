@@ -1,5 +1,8 @@
 /* application css */
-#main {font-size:200%;}
+#main {font-size:200%}
 .hl {color:red;}
 .tagmarker{font-size:50%;}
 .pbmarker{background: darkblue; border-radius:5px;color:white;}
+.paragraph{background: brown; border-radius:5px;color:white;}
+.footnote{background: yellow; border-radius:50%;}
+.correction{color:darkgreen;}
