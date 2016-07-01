@@ -2,19 +2,36 @@ var React=require("react");
 var ReactDOM=require("react-dom");
 var CodeMirror=require("ksana-codemirror").Component;
 var E=React.createElement;
+var PT=React.PropTypes;
 var styles={image:{height:"100%"}};
 var Magnifier=require("./magnifier");
 var rule=require("./rule_dhammakaya_pts");
 var Controls=require("./controls");
+var {store,action,getter,registerGetter,unregisterGetter}=require("./model");
+var fileio=require("./fileio");
+
 var Maincomponent = React.createClass({
 	getInitialState:function() {
 		var m=new Magnifier();
 		return {data:"",pageid:rule.initpage,m};
 	}
 	,prevline:-1
-	
+  ,childContextTypes: {
+    store: PT.object
+    ,action: PT.func
+    ,getter: PT.func
+    ,registerGetter:PT.func
+    ,unregisterGetter:PT.func
+  }
+  ,getChildContext:function(){
+    return {action,store,getter,registerGetter,unregisterGetter};
+  }
 	,componentWillMount:function(){
-		rule.loadfile.call(this,"d1.xml");
+		fileio.init();
+		store.listen("loaded",this.loaded,this)
+	}
+	,loaded:function(data){
+		this.setState({data});
 	}
 	,componentDidUpdate:function() {
 		this.cm=this.refs.cm.getCodeMirror();//codemirror instance
@@ -45,7 +62,7 @@ var Maincomponent = React.createClass({
 	}
   ,render: function() {
   	if (!this.state.data) {
-  		return E("div",{},"Loading");
+  		return E("div",{},E(Controls,{}));
   	}
   	return E("div",{},E(Controls,{}),
     	E("div",{style:{display:"flex",flexDirection:"row"}},

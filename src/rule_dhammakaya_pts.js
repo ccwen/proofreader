@@ -1,6 +1,5 @@
 /* convert simple markup to tag */
 /* give warning for */
-var fs=require("./socketfs");
 var PBLINE=[];
 var initpage="6.1";
 
@@ -90,11 +89,6 @@ var buildPBLINE=function() {
 
 		//console.log("rebuild pbline",new Date()-t);
 	}
-var loadfile=function(fn){
-	fs.readFile("d1.xml",function(err,data){
-		this.setState({data});
-	}.bind(this));
-}
 var setDoc=function(_doc){
 	doc=_doc;
 }
@@ -108,5 +102,5 @@ var getPageByLine=function(line) {
 		return 1;//default
 }
 
-module.exports={loadfile,markAllLine,markLine,initpage,getimagefilename,setDoc
+module.exports={markAllLine,markLine,initpage,getimagefilename,setDoc
 ,getPageByLine};
