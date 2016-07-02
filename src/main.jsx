@@ -33,12 +33,17 @@ var Maincomponent = React.createClass({
 		store.listen("loaded",this.loaded,this);
 		store.listen("saved",this.saved,this);
 		registerGetter("getcontent",this.getcontent);
+		registerGetter("setcontent",this.setcontent);
 	}
 	,componentWillUnmount:function(){
 		unregisterGetter("getcontent");
 	}
 	,getcontent:function(){
 		return this.refs.cm.getCodeMirror().getValue();
+	}
+	,setcontent:function(content){
+		this.refs.cm.getCodeMirror().setValue(content);
+		if (!this.state.dirty) this.setState({dirty:true});
 	}
 	,loaded:function(data){
 		this.setState({data,dirty:false});

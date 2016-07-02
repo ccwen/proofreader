@@ -13,8 +13,21 @@ var onTagClick=function(e) {
 		marker.clear();
 }
 
-var automark=function(){
-	console.log("automark");
+var markparagraph=function(content){
+	return content.replace(/ (\d+\.)/g,function(m,m1){
+		return "^"+m1;
+	})
+}
+var footnotepat=/([a-zA-ZāĀīĪūŪṃṂṅṄñÑṭṬḍḌṇṆḷḶḥḤṛṚśŚṣṢṝṜḹḸ,.{}'”’\-:]{2,})(\d+)([! .?\-”])/g;
+var markfootnote=function(content){
+	return content.replace(footnotepat,function(m,w,n,e){
+		return w+"#"+n+e;
+	});
+}
+var automark=function(content){
+	var content=markparagraph(content);
+	content=markfootnote(content);
+	return content;
 }
 var validatemark=function(){
 

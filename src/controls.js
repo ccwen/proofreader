@@ -8,7 +8,9 @@ var markupButtons=React.createClass({
     	getter:PT.func
 	}	
 	,automark:function(){
-		this.context.getter("automark");
+		var content=this.context.getter("getcontent");
+		var newcontent=this.context.getter("automark",content);
+		this.context.getter("setcontent",newcontent);
 	}
 	,render:function(){
 		return E("div",{},
