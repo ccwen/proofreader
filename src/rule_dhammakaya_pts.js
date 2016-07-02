@@ -13,6 +13,12 @@ var onTagClick=function(e) {
 		marker.clear();
 }
 
+var automark=function(){
+	console.log("automark");
+}
+var validatemark=function(){
+
+}
 var createMarker=function(classname,tag) {
 		var element=document.createElement("SPAN");
 		element.className=classname;
@@ -103,4 +109,4 @@ var getPageByLine=function(line) {
 }
 
 module.exports={markAllLine,markLine,initpage,getimagefilename,setDoc
-,getPageByLine};
+,getPageByLine,automark,validatemark};

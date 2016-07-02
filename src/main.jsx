@@ -6,6 +6,7 @@ var PT=React.PropTypes;
 var styles={image:{height:"100%"}};
 var Magnifier=require("./magnifier");
 var rule=require("./rule_dhammakaya_pts");
+var setRule=require("./rule").setRule;
 var Controls=require("./controls");
 var {store,action,getter,registerGetter,unregisterGetter}=require("./model");
 var fileio=require("./fileio");
@@ -13,7 +14,8 @@ var fileio=require("./fileio");
 var Maincomponent = React.createClass({
 	getInitialState:function() {
 		var m=new Magnifier();
-		return {data:"",pageid:rule.initpage,m};
+		setRule(rule);
+		return {data:"",pageid:rule.initpage,m,dirty:false};
 	}
 	,prevline:-1
   ,childContextTypes: {
@@ -28,10 +30,21 @@ var Maincomponent = React.createClass({
   }
 	,componentWillMount:function(){
 		fileio.init();
-		store.listen("loaded",this.loaded,this)
+		store.listen("loaded",this.loaded,this);
+		store.listen("saved",this.saved,this);
+		registerGetter("getcontent",this.getcontent);
+	}
+	,componentWillUnmount:function(){
+		unregisterGetter("getcontent");
+	}
+	,getcontent:function(){
+		return this.refs.cm.getCodeMirror().getValue();
 	}
 	,loaded:function(data){
-		this.setState({data});
+		this.setState({data,dirty:false});
+	}
+	,saved:function(){
+		this.setState({dirty:false});
 	}
 	,componentDidUpdate:function() {
 		this.cm=this.refs.cm.getCodeMirror();//codemirror instance
@@ -60,11 +73,14 @@ var Maincomponent = React.createClass({
 		}
 		this.prevline=pos.line;
 	}
+	,onChange:function(){
+		this.setState({dirty:true});
+	}
   ,render: function() {
   	if (!this.state.data) {
   		return E("div",{},E(Controls,{}));
   	}
-  	return E("div",{},E(Controls,{}),
+  	return E("div",{},E(Controls,{dirty:this.state.dirty}),
     	E("div",{style:{display:"flex",flexDirection:"row"}},
       	E("div",{style:{flex:4}},
     			E("img",{ref:"image" ,id:"thumb",style:styles.image,
@@ -72,6 +88,7 @@ var Maincomponent = React.createClass({
     			)
     		,E("div",{style:{flex:8}},
 	      	E(CodeMirror,{ref:"cm",value:this.state.data,
+	      		onChange:this.onChange,
   	    		onCursorActivity:this.onCursorActivity}))
     		)
     	)
