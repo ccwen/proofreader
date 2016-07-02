@@ -3,6 +3,7 @@ var {store,action,getter,hasGetter,registerGetter,unregisterGetter}=require("./m
 var rule={
 	setRule:function(_rule){
 		this.rule=_rule;
+		if (_rule.init) _rule.init();
 		unregisterGetter("automark");
 		registerGetter("automark",_rule.automark);
 	}

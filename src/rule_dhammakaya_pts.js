@@ -2,9 +2,16 @@
 /* give warning for */
 var PBLINE=[];
 var initpage="6.1";
-
+var fs=require("./socketfs");
 var doc=null;
+var footnote=null;
 
+var init=function(){
+	var c=fs.readFile("footnote.json",function(err,data){
+		footnote=JSON.parse(data);
+		console.log(Object.keys(footnote).length);	
+	});
+}
 var onTagClick=function(e) {
 		var marker=e.target.marker;
 		var pos=marker.find();
@@ -120,6 +127,15 @@ var getPageByLine=function(line) {
 		}
 		return 1;//default
 }
-
+var getFootnote=function(str,pg){
+	var m=str.match(/#(\d+)/);
+	if (m){
+		var footnoteinpage=footnote[pg];
+		if (footnoteinpage){
+			return pg+"#" +footnoteinpage[parseInt(m[1])-1];
+		}
+	}
+	return "";
+}
 module.exports={markAllLine,markLine,initpage,getimagefilename,setDoc
-,getPageByLine,automark,validatemark};
+,getPageByLine,automark,validatemark,init,getFootnote};

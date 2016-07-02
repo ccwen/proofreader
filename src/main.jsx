@@ -69,13 +69,18 @@ var Maincomponent = React.createClass({
 
 	,onCursorActivity:function(cm) {
 		var pos=cm.getCursor();
+		var pageid=rule.getPageByLine(pos.line);
+
 		if (this.prevline>-1 && pos.line!==this.prevline) {
 			rule.markLine(this.prevline,true);
-			var pageid=rule.getPageByLine(pos.line);
 			if (this.state.pageid!==pageid) {
 				this.setState({pageid});
 			}
 		}
+		var index=cm.indexFromPos(pos);
+		var str=cm.getValue().substr(index-5,10);
+		var footnote=rule.getFootnote(str,pageid);
+		action("footnote",footnote);
 		this.prevline=pos.line;
 	}
 	,onChange:function(){

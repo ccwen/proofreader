@@ -21,7 +21,8 @@ var markupButtons=React.createClass({
 var loadSaveButtons=React.createClass({
 	contextTypes:{
     	action:PT.func,
-    	getter:PT.func
+    	getter:PT.func,
+    	store:PT.object
 	}
 	,getInitialState:function(){
 		return {fn:"d1.xml"};
@@ -56,12 +57,29 @@ var loadSaveButtons=React.createClass({
 });
 
 var Controls=React.createClass({
-	render:function(){
-		return E("div",{style:{right:20,zIndex:100,
-			height:30,background:"gray",position:"absolute"}},
-			E(loadSaveButtons,this.props),E(markupButtons,this.props));
+	contextTypes:{
+    	store:PT.object
+	}
+	,getInitialState:function(){
+		return {note:""};
+	}
+	,componentDidMount:function(){
+		this.context.store.listen("footnote",this.footnote,this);		
+	}
+	,footnote:function(note){
+		this.setState({note});
+	}
+	,render:function(){
+		return E("div",{style:{right:20,width:250,zIndex:100,
+			height:120,background:"silver",position:"absolute"}},
+			E(loadSaveButtons,this.props),E(markupButtons,this.props),
+			E("div",{},E("span",{style:styles.note},this.state.note))
+		);
 	}
 })
+var styles={
+	note:{fontSize:"50%"}
+}
 /*
   save , and load 
   control code : ~ , # , ^
