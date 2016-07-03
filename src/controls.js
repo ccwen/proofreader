@@ -12,9 +12,14 @@ var markupButtons=React.createClass({
 		var newcontent=this.context.getter("automark",content);
 		this.context.getter("setcontent",newcontent);
 	}
+	,nextwarning:function(){
+		this.context.action("nextwarning");
+
+	}
 	,render:function(){
 		return E("div",{},
-			E("button",{onClick:this.automark},"automark")
+			E("button",{onClick:this.automark},"automark"),
+			E("button",{onClick:this.nextwarning,style:styles.msg},this.props.msg)
 		)	
 	}
 });
@@ -78,19 +83,16 @@ var Controls=React.createClass({
 	}
 })
 var styles={
-	note:{fontSize:"50%"}
+	note:{fontSize:"50%"},
+	msg:{fontSize:"50%"}
 }
 /*
   save , and load 
   control code : ~ , # , ^
-  
 
-
-  show footnote when 
   show error/warning message ( repeat or missing footnote)
   jump to next page with error
 
-  automarkup paragraph and footnote
 
 */
 module.exports=Controls;

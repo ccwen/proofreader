@@ -3,6 +3,7 @@
 .hl {color:red;}
 .tagmarker{font-size:50%;}
 .pbmarker{background: darkblue; border-radius:5px;color:white;}
-.paragraph{background: brown; border-radius:5px;color:white;}
-.footnote{background: yellow; border-radius:50%;}
+.paragraph{background: darkgreen; border-radius:5px;color:white;font-size:150%;}
+.footnote{background: pink; border-radius:50%;}
 .correction{color:darkgreen;}
+.warning {background:red;width:100%;color:yellow;}

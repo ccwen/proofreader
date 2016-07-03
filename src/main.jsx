@@ -15,7 +15,7 @@ var Maincomponent = React.createClass({
 	getInitialState:function() {
 		var m=new Magnifier();
 		setRule(rule);
-		return {data:"",pageid:rule.initpage,m,dirty:false};
+		return {data:"",pageid:rule.initpage,m,dirty:false,warningcount:0};
 	}
 	,prevline:-1
   ,childContextTypes: {
@@ -32,6 +32,7 @@ var Maincomponent = React.createClass({
 		fileio.init();
 		store.listen("loaded",this.loaded,this);
 		store.listen("saved",this.saved,this);
+		store.listen("nextwarning",this.nextwarning,this);
 		registerGetter("getcontent",this.getcontent);
 		registerGetter("setcontent",this.setcontent);
 	}
@@ -47,6 +48,9 @@ var Maincomponent = React.createClass({
 	}
 	,loaded:function(data){
 		this.setState({data,dirty:false});
+		setTimeout(function(){
+			this.onChange();//trigger validator
+		}.bind(this),500);
 	}
 	,saved:function(){
 		this.setState({dirty:false});
@@ -57,6 +61,7 @@ var Maincomponent = React.createClass({
 
 		rule.setDoc(this.doc);
 		rule.markAllLine();
+
 		var imgfn=rule.getimagefilename(this.state.pageid);
 		this.state.m.attach({
 		    thumb: '#thumb',
@@ -66,7 +71,12 @@ var Maincomponent = React.createClass({
 		    zoomable: true
 		});		
 	}	
-
+	,nextwarning:function(){//jump to next warning
+		var pos=this.cm.getCursor();
+		var next=rule.nextWarning(pos.line);
+		this.cm.scrollIntoView({line:next+5,ch:0});
+		this.doc.setCursor({line:next,ch:0});
+	}
 	,onCursorActivity:function(cm) {
 		var pos=cm.getCursor();
 		var pageid=rule.getPageByLine(pos.line);
@@ -84,13 +94,22 @@ var Maincomponent = React.createClass({
 		this.prevline=pos.line;
 	}
 	,onChange:function(){
-		this.setState({dirty:true});
+		if (!this.state.dirty && this.doc.getValue()!==this.state.data) {//setcontent will trigger onchange
+			this.setState({dirty:true});
+		}
+
+		clearTimeout(this.timer1);
+
+		this.timer1=setTimeout(function(){
+			var warningcount=rule.validateMark(this.doc.getValue());	
+			this.setState({warningcount});
+		}.bind(this),500);
 	}
   ,render: function() {
   	if (!this.state.data) {
   		return E("div",{},E(Controls,{}));
   	}
-  	return E("div",{},E(Controls,{dirty:this.state.dirty}),
+  	return E("div",{},E(Controls,{dirty:this.state.dirty,msg:this.state.warningcount+" warnings"}),
     	E("div",{style:{display:"flex",flexDirection:"row"}},
       	E("div",{style:{flex:4}},
     			E("img",{ref:"image" ,id:"thumb",style:styles.image,
