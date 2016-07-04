@@ -55,13 +55,16 @@ var showWarnings=function(newwarnings){
 		}
 	}
 }
+
+
 /* wrong foot note*/
 var getWarnings=function(content){
 	var out={};
 	var lines=content.split("\n");
-	var note=1,prevpg;
+	var note=1,prevpg,prevp=0;
 	for (var i=0;i<lines.length;i++) {
 		var line=lines[i];
+		//check max footnote in page
 		var m=line.match(/~(\d+)\.(\d+)/);
 		if (m) {
 			if (footnote[prevpg] && footnote[prevpg].length!==note) {
@@ -71,7 +74,7 @@ var getWarnings=function(content){
 			prevpg=m[1]+"."+m[2];
 			note=1;
 		}
-
+		//check continuety of footnote
 		line.replace(/#(\d+)/g,function(m,m1){
 			var fn=parseInt(m1);
 			if ((note+1)!==fn && note!==fn) {
@@ -80,6 +83,20 @@ var getWarnings=function(content){
 			}
 			note=fn;
 		})
+		//check continuety of p
+		line.replace(/\^(\d+)/g,function(m,m1){
+			console.log(m1,line);
+			var p=parseInt(m1);
+			if (p<prevp) {
+					//reset
+			} else if (prevp+1==p) {
+				//ok
+			} else {//空號
+				if (warnings[i]&&warnings[i].widget)warnings[i].widget.clear();
+				out[i]={message:"previouse p "+prevp};
+			}
+			prevp=p;
+		});
 	}
 	
 	return out;
