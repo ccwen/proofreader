@@ -5,6 +5,7 @@ var initpage="6.1";
 var fs=require("./socketfs");
 var doc=null;
 var footnote=null;
+var {action}=require("./model");
 
 var init=function(){
 	var c=fs.readFile("footnote.json",function(err,data){
@@ -197,5 +198,17 @@ var nextWarning=function(ln){
 	}
 	return 0;
 }
+var setHotkeys=function(cm){
+		cm.setOption("extraKeys", {
+	  	"Ctrl-L": function(cm) {
+	  		action("nextwarning");
+	  	}
+	  	,
+	  	"Ctrl-S": function(cm) {
+	  		action("savefile");
+	  	}
+	  });
+}
+
 module.exports={markAllLine,markLine,initpage,getimagefilename,setDoc
-,getPageByLine,automark,validateMark,init,getFootnote,nextWarning};
+,getPageByLine,automark,validateMark,init,getFootnote,nextWarning,setHotkeys};

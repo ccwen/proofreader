@@ -14,7 +14,6 @@ var markupButtons=React.createClass({
 	}
 	,nextwarning:function(){
 		this.context.action("nextwarning");
-
 	}
 	,render:function(){
 		return E("div",{},
@@ -34,6 +33,7 @@ var loadSaveButtons=React.createClass({
 	}
 	,componentDidMount:function(){
 		setTimeout(this.loadfile,1000);
+		this.context.store.listen("savefile",this.savefile,this);		
 	}
 	,loadfile:function(){
 		var action=this.context.action;
@@ -42,6 +42,7 @@ var loadSaveButtons=React.createClass({
 		});
 	}
 	,savefile:function(){
+		if (!this.props.dirty)return;
 		var action=this.context.action;
 		var content=this.context.getter("getcontent");
 		this.context.getter("save",{fn:this.state.fn,content},function(err){
@@ -87,12 +88,7 @@ var styles={
 	msg:{fontSize:"50%"}
 }
 /*
-  save , and load 
-  control code : ~ , # , ^
-
-  show error/warning message ( repeat or missing footnote)
-  jump to next page with error
-
+  HOT KEY for next error
 
 */
 module.exports=Controls;

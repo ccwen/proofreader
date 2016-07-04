@@ -56,6 +56,9 @@ var Maincomponent = React.createClass({
 		this.setState({dirty:false});
 	}
 	,componentDidUpdate:function() {
+		if (!this.cm) {
+			rule.setHotkeys(this.refs.cm.getCodeMirror());
+		}
 		this.cm=this.refs.cm.getCodeMirror();//codemirror instance
 		this.doc=this.cm.getDoc();
 
