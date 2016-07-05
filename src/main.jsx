@@ -84,8 +84,8 @@ var Maincomponent = React.createClass({
 		var pos=cm.getCursor();
 		var pageid=rule.getPageByLine(pos.line);
 
-		if (this.prevline>-1 && pos.line!==this.prevline) {
-			rule.markLine(this.prevline,true);
+		if (pos.line!==this.prevline) {
+			if (this.prevline>-1) rule.markLine(this.prevline,true);
 			if (this.state.pageid!==pageid) {
 				this.setState({pageid});
 			}

@@ -1,13 +1,22 @@
 /* convert simple markup to tag */
 /* give warning for */
 var PBLINE=[];
-var initpage="6.1";
+var initpage="9.1";
 var fs=require("./socketfs");
 var doc=null;
 var footnote=null;
 var {action}=require("./model");
 
+var firstpages={
+	1:58,2:8,3:7,4:6,5:6, //VIN
+	6:11,7:10,8:7,  //DN
+	9:9,10:4,11:5, //MN
+	12:15,13:14,14:14,15:12 ,16:11,//SN
+	17:13,18:13,19:9,20:9,21:15 //AN
+
+}
 var init=function(){
+	fs.setDataroot("dhammakaya/htll/")	;
 	var c=fs.readFile("footnote.json",function(err,data){
 		footnote=JSON.parse(data);
 		console.log(Object.keys(footnote).length);	
@@ -139,6 +148,8 @@ var createMarker=function(classname,tag) {
 }
 
 var markLine=function(i,rebuild) {
+		var M=doc.findMarks({line:i,ch:0},{line:i,ch:65536});
+		M.forEach(function(m){m.clear()});
 		var line=doc.getLine(i);
 		var dirty=false;
 		line.replace(/~(\d+)\.(\d+)/g,function(m,vol,pg,idx){
@@ -177,18 +188,24 @@ var markLine=function(i,rebuild) {
 var getimagefilename=function(pageid) {
 		var m=pageid.match(/(\d+)\.(\d+)/);
 		vol=parseInt(m[1],10);
-		pg="00"+(parseInt(m[2],10)+10);
+		pg="00"+(parseInt(m[2],10)+ (firstpages[vol]-1)  );
 
 		pg=pg.substr(pg.length-3);
 		return "images/"+vol+"/"+pg+".png";
 }
 var markAllLine=function() {
+	var M=doc.getAllMarks();
+	M.forEach(function(m){m.clear()});
 	for (var i=0;i<doc.lineCount();i++){
 		markLine(i);
 	}
 	buildPBLINE();
 }
-
+var prevpageid=function(pageid){
+	var m=pageid.match(/(\d+)\.(\d+)/);
+	if (!m) return pageid;
+	return m[1]+"."+(parseInt(m[2])-1);
+}
 var buildPBLINE=function() {
 		//var t=new Date();
 		var marks=doc.getAllMarks();
@@ -204,6 +221,9 @@ var buildPBLINE=function() {
 			return a[0]-b[0];
 		});
 
+		if (PBLINE[0][0]>0) { //append previous PB
+			PBLINE.unshift([1,prevpageid(PBLINE[0][1])]);
+		}
 		//console.log("rebuild pbline",new Date()-t);
 	}
 var setDoc=function(_doc){

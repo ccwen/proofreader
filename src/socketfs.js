@@ -3,9 +3,10 @@ if (typeof fs.readFile=="undefined") {
 	var rpcfs=require("./rpc/rpc_fs");	
 	var rpcutil=require("./rpc/rpc_util");	
 }
-
-var dataroot="dhammakaya/xml/";
-
+var dataroot="";
+var setDataroot=function(_dataroot){
+	dataroot=_dataroot;
+}
 var ready=function() {
 	if (fs.readFile) return true;
 	if (window.host.rpchost) return true;
@@ -69,5 +70,5 @@ var readdirmeta=function(path,cb) {//read all meta in given path
 	}
 
 }
-module.exports={readFile:readFile,writeFile:writeFile,exists:exists,
+module.exports={readFile:readFile,writeFile:writeFile,exists:exists,setDataroot,
 	unlink:unlink,mkdir:mkdir,readdir:readdir,readdirmeta:readdirmeta,ready:ready};

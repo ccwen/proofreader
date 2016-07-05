@@ -29,7 +29,7 @@ var loadSaveButtons=React.createClass({
     	store:PT.object
 	}
 	,getInitialState:function(){
-		return {fn:"d1.xml"};
+		return {fn:"m1.txt"};
 	}
 	,componentDidMount:function(){
 		setTimeout(this.loadfile,1000);
