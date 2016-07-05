@@ -108,6 +108,9 @@ var Maincomponent = React.createClass({
 			this.setState({warningcount});
 		}.bind(this),500);
 	}
+	,onBeforeChange:function(cm,co){
+		rule.onBeforeChange(cm,co);
+	}
   ,render: function() {
   	if (!this.state.data) {
   		return E("div",{},E(Controls,{}));
@@ -121,6 +124,7 @@ var Maincomponent = React.createClass({
     		,E("div",{style:{flex:8}},
 	      	E(CodeMirror,{ref:"cm",value:this.state.data,
 	      		onChange:this.onChange,
+	      		onBeforeChange:this.onBeforeChange,
   	    		onCursorActivity:this.onCursorActivity}))
     		)
     	)

@@ -41,6 +41,14 @@ var loadSaveButtons=React.createClass({
 			action("loaded",data);
 		});
 	}
+	,loadnextfile:function(){
+		var fn=this.state.fn.replace(/\d+/,function(m){
+			return parseInt(m)+1;
+		});
+		this.setState({fn},function(){
+			this.loadfile();
+		}.bind(this));
+	}
 	,savefile:function(){
 		if (!this.props.dirty)return;
 		var action=this.context.action;
@@ -54,8 +62,9 @@ var loadSaveButtons=React.createClass({
 	}
 	,render:function(){
 		return E("div",{},
-			E("input",{value:this.state.fn,onChange:this.onInput,disabled:this.props.dirty})
-				,E("button",{onClick:this.loadfile,disabled:this.props.dirty},"load"),
+			E("button",{onClick:this.loadfile,disabled:this.props.dirty},"load"),
+			E("button",{onClick:this.loadnextfile,disabled:this.props.dirty},"next"),
+			E("input",{size:5,value:this.state.fn,onChange:this.onInput,disabled:this.props.dirty}),
 			E("button",{onClick:this.savefile,disabled:!this.props.dirty},"save")
 		)	
 	}

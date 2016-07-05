@@ -20,7 +20,30 @@ var onTagClick=function(e) {
 		doc.cm.focus();
 		marker.clear();
 }
-
+var allowpat=/([0-9.^#*~]+)/;
+var canDelete=function(cm,co){
+	var text=cm.doc.getValue();
+	var from=cm.indexFromPos(co.from);
+	var to=cm.indexFromPos(co.to);
+	var del=text.substring(from,to);
+	var m=del.match(allowpat);
+	if (m&&m[0]==m[1]) return;
+	co.cancel();
+}
+var canInput=function(cm,co){
+	if (co.text.length!==1) {
+		co.cancel();
+		return;
+	}
+	var t=co.text[0];
+	var m=t.match(allowpat);
+	if (m&&m[0]==m[1]) return;
+	co.cancel();
+}
+var onBeforeChange=function(cm,co){
+	if (co.origin=="+input") canInput(cm,co);
+	if (co.origin=="+delete") canDelete(cm,co);
+}
 var markparagraph=function(content){
 	return content.replace(/ (\d+\.)/g,function(m,m1){
 		return "^"+m1;
@@ -85,7 +108,6 @@ var getWarnings=function(content){
 		})
 		//check continuety of p
 		line.replace(/\^(\d+)/g,function(m,m1){
-			console.log(m1,line);
 			var p=parseInt(m1);
 			if (p<prevp) {
 					//reset
@@ -228,4 +250,5 @@ var setHotkeys=function(cm){
 }
 
 module.exports={markAllLine,markLine,initpage,getimagefilename,setDoc
-,getPageByLine,automark,validateMark,init,getFootnote,nextWarning,setHotkeys};
+,getPageByLine,automark,validateMark,init,getFootnote,nextWarning,setHotkeys
+,onBeforeChange};
