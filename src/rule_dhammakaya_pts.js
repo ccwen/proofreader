@@ -1,7 +1,7 @@
 /* convert simple markup to tag */
 /* give warning for */
 var PBLINE=[];
-var initpage="9.1";
+var initpage="";
 var fs=require("./socketfs");
 var doc=null;
 var footnote=null;
@@ -111,7 +111,7 @@ var getWarnings=function(content){
 			var fn=parseInt(m1);
 			if ((note+1)!==fn && note!==fn) {
 				if (warnings[i]&&warnings[i].widget)warnings[i].widget.clear();
-				out[i]={message:"previouse footnote "+note};
+				out[i]={message:"previous footnote "+note};
 			}
 			note=fn;
 		})
@@ -124,7 +124,7 @@ var getWarnings=function(content){
 				//ok
 			} else {//空號
 				if (warnings[i]&&warnings[i].widget)warnings[i].widget.clear();
-				out[i]={message:"previouse p "+prevp};
+				out[i]={message:"previous p "+prevp};
 			}
 			prevp=p;
 		});
@@ -186,12 +186,13 @@ var markLine=function(i,rebuild) {
 	}
 
 var getimagefilename=function(pageid) {
-		var m=pageid.match(/(\d+)\.(\d+)/);
-		vol=parseInt(m[1],10);
-		pg="00"+(parseInt(m[2],10)+ (firstpages[vol]-1)  );
+	if (!pageid)return "images/empty.png";
+	var m=pageid.match(/(\d+)\.(\d+)/);
+	vol=parseInt(m[1],10);
+	pg="00"+(parseInt(m[2],10)+ (firstpages[vol]-1)  );
 
-		pg=pg.substr(pg.length-3);
-		return "images/"+vol+"/"+pg+".png";
+	pg=pg.substr(pg.length-3);
+	return "images/"+vol+"/"+pg+".png";
 }
 var markAllLine=function() {
 	var M=doc.getAllMarks();
@@ -209,6 +210,7 @@ var prevpageid=function(pageid){
 var buildPBLINE=function() {
 		//var t=new Date();
 		var marks=doc.getAllMarks();
+		if (!marks.length)return;
 		PBLINE=[];
 		for (var i=0;i<marks.length;i++) {
 			var m=marks[i];
@@ -230,6 +232,7 @@ var setDoc=function(_doc){
 	doc=_doc;
 }
 var getPageByLine=function(line) {
+	if (!PBLINE.length)return;
 		for (var i=1;i<PBLINE.length;i++) {
 			var pbline=PBLINE[i];
 			if (pbline[0]>line) {

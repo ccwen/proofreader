@@ -29,7 +29,8 @@ var loadSaveButtons=React.createClass({
     	store:PT.object
 	}
 	,getInitialState:function(){
-		return {fn:"m1.txt"};
+		var fn=localStorage.getItem("workingfn")||"m1.txt";
+		return {fn};
 	}
 	,componentDidMount:function(){
 		setTimeout(this.loadfile,1000);
@@ -37,6 +38,7 @@ var loadSaveButtons=React.createClass({
 	}
 	,loadfile:function(){
 		var action=this.context.action;
+		localStorage.setItem("workingfn",this.state.fn);		
 		this.context.getter("file",this.state.fn,function(data){
 			action("loaded",data);
 		});

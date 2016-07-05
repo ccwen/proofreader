@@ -470,7 +470,7 @@ var Magnifier = function (options) {
             curThumb = options.thumb;
             if (options.large) {
                 data[options.thumb.id].largeUrl=options.large;
-                _largeObj.src=options.large;
+                if (_largeObj) _largeObj.src=options.large;
             }
             return false;
         }

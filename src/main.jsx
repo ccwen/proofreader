@@ -39,12 +39,21 @@ var Maincomponent = React.createClass({
 	,componentWillUnmount:function(){
 		unregisterGetter("getcontent");
 	}
+	,componentDidMount:function(){
+		rule.setHotkeys(this.refs.cm.getCodeMirror());
+		this.cm=this.refs.cm.getCodeMirror();//codemirror instance
+		this.doc=this.cm.getDoc();
+
+		rule.setDoc(this.doc);
+		rule.markAllLine();
+	}
 	,getcontent:function(){
 		return this.refs.cm.getCodeMirror().getValue();
 	}
 	,setcontent:function(content){
 		this.refs.cm.getCodeMirror().setValue(content);
 		if (!this.state.dirty) this.setState({dirty:true});
+		rule.markAllLine();
 	}
 	,loaded:function(data){
 		this.setState({data,dirty:false});
@@ -56,15 +65,6 @@ var Maincomponent = React.createClass({
 		this.setState({dirty:false});
 	}
 	,componentDidUpdate:function() {
-		if (!this.cm) {
-			rule.setHotkeys(this.refs.cm.getCodeMirror());
-		}
-		this.cm=this.refs.cm.getCodeMirror();//codemirror instance
-		this.doc=this.cm.getDoc();
-
-		rule.setDoc(this.doc);
-		rule.markAllLine();
-
 		var imgfn=rule.getimagefilename(this.state.pageid);
 		this.state.m.attach({
 		    thumb: '#thumb',
@@ -112,9 +112,7 @@ var Maincomponent = React.createClass({
 		rule.onBeforeChange(cm,co);
 	}
   ,render: function() {
-  	if (!this.state.data) {
-  		return E("div",{},E(Controls,{}));
-  	}
+
   	return E("div",{},E(Controls,{dirty:this.state.dirty,msg:this.state.warningcount+" warnings"}),
     	E("div",{style:{display:"flex",flexDirection:"row"}},
       	E("div",{style:{flex:4}},
