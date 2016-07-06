@@ -57,6 +57,7 @@ var Maincomponent = React.createClass({
 	}
 	,loaded:function(data){
 		this.setState({data,dirty:false});
+		rule.markAllLine();
 		setTimeout(function(){
 			this.onChange();//trigger validator
 		}.bind(this),500);
