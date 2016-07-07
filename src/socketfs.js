@@ -13,8 +13,14 @@ var ready=function() {
 	return false;
 }
 var readFile=function(fn,opts,cb) {
-	if (fs.readFile) fs.readFile(dataroot+fn,opts,cb);
-	else {
+
+	if (fs.readFile) {
+		if (typeof opts==="function") {
+			cb=opts;
+			opts="utf8";
+		}
+		fs.readFile("../"+dataroot+fn,opts,cb);
+	} else {
 		if (typeof opts==="function") {
 			cb=opts;
 			opts=null;
@@ -23,8 +29,13 @@ var readFile=function(fn,opts,cb) {
 	}
 }
 var writeFile=function(fn,data,opts,cb) {
-	if (fs.writeFile) fs.writeFile(dataroot+fn,data,opts,cb);
-	else {
+	if (fs.writeFile) {
+		if (typeof opts==="function") {
+			cb=opts;
+			opts="utf8";
+		}
+		fs.writeFile("../"+dataroot+fn,data,opts,cb);
+	} else {
 		if (typeof opts==="function") {
 			cb=opts;
 			opts=null;

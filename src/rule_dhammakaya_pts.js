@@ -1,3 +1,14 @@
+/*
+usable 
+@
+$
+%
+*
++
+# foot note
+~ page break
+^ paragraph
+*/
 /* convert simple markup to tag */
 /* give warning for */
 var PBLINE=[];
@@ -11,7 +22,7 @@ var firstpages={
 	1:58,2:8,3:7,4:6,5:6, //VIN
 	6:11,7:10,8:7,  //DN
 	9:9,10:4,11:5, //MN
-	12:15,13:14,14:14,15:12 ,16:11,//SN
+	12:17,13:14,14:14,15:12 ,16:11,//SN
 	17:13,18:13,19:9,20:9,21:15 //AN
 
 }
@@ -29,7 +40,7 @@ var onTagClick=function(e) {
 		doc.cm.focus();
 		marker.clear();
 }
-var allowpat=/([0-9.^#*~]+)/;
+var allowpat=/([0-9.^#*~ ]+)/;
 var canDelete=function(cm,co){
 	var text=cm.doc.getValue();
 	var from=cm.indexFromPos(co.from);
@@ -122,7 +133,7 @@ var getWarnings=function(content){
 					//reset
 			} else if (prevp+1==p) {
 				//ok
-			} else {//空號
+			} else if (prevp) {//空號
 				if (warnings[i]&&warnings[i].widget)warnings[i].widget.clear();
 				out[i]={message:"previous p "+prevp};
 			}

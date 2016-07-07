@@ -1,3 +1,4 @@
+
 var fs=require('fs');
 var sep=require('path').sep;
 var file=process.cwd()+sep+'bundle.js';
@@ -10,23 +11,27 @@ var watchFiles=function() {
 var unwatchFiles=function() {
   fs.unwatchFile(file);
 }
+
 var reload=function(){
-  var gui = global.window.nwDispatcher.requireNwGui();
-  var win = gui.Window.get();
-  gui.App.clearCache();
-  win.reload();
+  App.clearCache();
+  nw.Window.get().reload();
 }
 
-// nodemain.js // this java script must be load by inject-script-start in package.json*/
+
+
+// nodemain.js // this java script must be load by inject-script-start in package.json
 if (typeof process !="undefined") {			// checking if node.js is running
 	nodeRequire=require;			// browser side package will overwrite require
+	/*
 	if (process.versions["node-webkit"]) {	// checking if nw is running
-		var gui = global.window.nwDispatcher.requireNwGui();
-		gui.Window.get().on('close', function(){
+		nw.Window.get().on('close', function(){
 		   unwatchFiles();
-		   gui.App.quit();
+		   App.quit();
 		});
-		watchFiles();
-		
+		//watchFiles();
 	}
+	*/
+	//nw.Window.get().showDevTools();
 }
+
+

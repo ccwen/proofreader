@@ -30,15 +30,21 @@ var loadSaveButtons=React.createClass({
 	}
 	,getInitialState:function(){
 		var fn=localStorage.getItem("workingfn")||"m1.txt";
-		return {fn};
+		var starttime=new Date();
+		return {fn,starttime};
 	}
 	,componentDidMount:function(){
 		setTimeout(this.loadfile,1000);
 		this.context.store.listen("savefile",this.savefile,this);		
+		this.timer=setInterval(this.updatetimer,10000);
+	}
+	,componentWillUnmount:function(){
+		clearInterval(this.timer);
 	}
 	,loadfile:function(){
 		var action=this.context.action;
 		localStorage.setItem("workingfn",this.state.fn);		
+		this.setState({starttime:new Date(),elapse:0});
 		this.context.getter("file",this.state.fn,function(data){
 			action("loaded",data);
 		});
@@ -62,12 +68,22 @@ var loadSaveButtons=React.createClass({
 	,onInput:function(e){
 		this.setState({fn:e.target.value});
 	}
+	,onKeyPress:function(e){
+		if (e.key=="Enter"){
+			this.loadfile();
+		}
+	}
+	,updatetimer:function(){
+		this.setState({elapse: Math.floor((new Date()-this.state.starttime)/1000) });
+	}
 	,render:function(){
 		return E("div",{},
 			E("button",{onClick:this.loadfile,disabled:this.props.dirty},"load"),
 			E("button",{onClick:this.loadnextfile,disabled:this.props.dirty},"next"),
-			E("input",{size:5,value:this.state.fn,onChange:this.onInput,disabled:this.props.dirty}),
-			E("button",{onClick:this.savefile,disabled:!this.props.dirty},"save")
+			E("input",{size:5,onKeyPress:this.onKeyPress,
+					value:this.state.fn,onChange:this.onInput,disabled:this.props.dirty}),
+			E("button",{onClick:this.savefile,disabled:!this.props.dirty},"save"),
+			E("span",{style:styles.elapse},this.state.elapse,"secs")
 		)	
 	}
 	
@@ -96,7 +112,8 @@ var Controls=React.createClass({
 })
 var styles={
 	note:{fontSize:"50%"},
-	msg:{fontSize:"50%"}
+	msg:{fontSize:"50%"},
+	elapse:{fontSize:"50%"}
 }
 /*
   HOT KEY for next error
