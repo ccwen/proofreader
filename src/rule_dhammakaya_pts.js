@@ -27,7 +27,7 @@ var firstpages={
 
 }
 var init=function(){
-	fs.setDataroot("dhammakaya/htll/")	;
+	fs.setDataroot("pts-dhammakaya/htll/")	;
 	var c=fs.readFile("footnote.json",function(err,data){
 		footnote=JSON.parse(data);
 		console.log(Object.keys(footnote).length);	
@@ -40,7 +40,7 @@ var onTagClick=function(e) {
 		doc.cm.focus();
 		marker.clear();
 }
-var allowpat=/([0-9.^#*~ ]+)/;
+var allowpat=/([\[\]0-9.^#*~ ]+)/;
 var canDelete=function(cm,co){
 	var text=cm.doc.getValue();
 	var from=cm.indexFromPos(co.from);
@@ -69,7 +69,7 @@ var markparagraph=function(content){
 		return "^"+m1;
 	})
 }
-var footnotepat=/([a-zA-ZāĀīĪūŪṃṂṅṄñÑṭṬḍḌṇṆḷḶḥḤṛṚśŚṣṢṝṜḹḸ,.{}'”’\-:]{2,})(\d+)([! .?\-”])/g;
+var footnotepat=/([a-zA-ZāĀīĪūŪṃṂṅṄñÑṭṬḍḌṇṆḷḶḥḤṛṚśŚṣṢṝṜḹḸ,.{}'”’\-:;]{2,})(\d+)([! .?\-”])/g;
 var markfootnote=function(content){
 	return content.replace(footnotepat,function(m,w,n,e){
 		return w+"#"+n+e;
@@ -112,7 +112,7 @@ var getWarnings=function(content){
 		if (m) {
 			if (footnote[prevpg] && footnote[prevpg].length!==note) {
 				if (warnings[i]&&warnings[i].widget)warnings[i].widget.clear();
-				out[i]={message:"footnote count missmatch "+footnote[prevpg].length+"!="+note};
+				out[i]={message:"footnote count mismatch "+footnote[prevpg].length+"(database) !="+note+"(this page)"};
 			}
 			prevpg=m[1]+"."+m[2];
 			note=1;
@@ -190,6 +190,15 @@ var markLine=function(i,rebuild) {
 				{clearOnEnter:true,replacedWith:element});
 			element.marker=marker;
 		});
+
+
+		line.replace(/\[(.+?)\]/g,function(m,m1,idx){
+			var element=createMarker("sutta",m1);
+			var marker=doc.markText({line:i,ch:idx},{line:i,ch:idx+m.length},
+				{clearOnEnter:true,replacedWith:element});
+			element.marker=marker;
+		});
+
 
 		setTimeout(function(){
 			if (rebuild && dirty) buildPBLINE();
