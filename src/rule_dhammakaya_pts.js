@@ -65,15 +65,23 @@ var onBeforeChange=function(cm,co){
 	if (co.origin=="+delete") canDelete(cm,co);
 }
 var markparagraph=function(content){
-	return content.replace(/ (\d+\.)/g,function(m,m1){
-		return "^"+m1;
+	return content.replace(/ (\d+)/g,function(m,m1){
+		return " ^"+m1;
 	})
 }
-var footnotepat=/([a-zA-ZāĀīĪūŪṃṂṅṄñÑṭṬḍḌṇṆḷḶḥḤṛṚśŚṣṢṝṜḹḸ,.{}'”’\-:;]{2,})(\d+)([! .?\-”])/g;
+var footnotepat=/([a-zA-ZāĀīĪūŪṃṂṅṄñÑṭṬḍḌṇṆḷḶḥḤṛṚśŚṣṢṝṜḹḸ,.{}'”’\-:;]{2,})(\d+)([:! .?\-”])/g;
+var footnotepat2=/(\d+)\n/g;
 var markfootnote=function(content){
-	return content.replace(footnotepat,function(m,w,n,e){
+	content=content.replace(footnotepat,function(m,w,n,e){
 		return w+"#"+n+e;
+	})
+
+	content=content.replace(footnotepat2,function(m,m1,idx){
+		//do not mark the page number
+		if (content[idx-1]=="." && content[idx-2]>='0' && content[idx-2]<='9') return m1+"\n";
+		return "#"+m1+"\n";
 	});
+	return content;
 }
 var automark=function(content){
 	var content=markparagraph(content);
