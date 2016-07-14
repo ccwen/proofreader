@@ -1,5 +1,5 @@
 /*
-usable 
+usable prefix
 @
 $
 %
@@ -22,7 +22,7 @@ var firstpages={
 	1:58,2:8,3:7,4:6,5:6, //VIN
 	6:11,7:10,8:7,  //DN
 	9:9,10:4,11:5, //MN
-	12:17,13:14,14:14,15:12 ,16:11,//SN
+	12:15,13:14,14:14,15:12 ,16:11,//SN
 	17:13,18:13,19:9,20:9,21:15 //AN
 
 }
@@ -65,7 +65,7 @@ var onBeforeChange=function(cm,co){
 	if (co.origin=="+delete") canDelete(cm,co);
 }
 var markparagraph=function(content){
-	return content.replace(/ (\d+)/g,function(m,m1){
+	return content.replace(/ (\d+\.)/g,function(m,m1){
 		return " ^"+m1;
 	})
 }
@@ -112,18 +112,18 @@ var showWarnings=function(newwarnings){
 var getWarnings=function(content){
 	var out={};
 	var lines=content.split("\n");
-	var note=1,prevpg,prevp=0;
+	var maxnote=1,note=1,prevpg,prevp=0;
 	for (var i=0;i<lines.length;i++) {
 		var line=lines[i];
 		//check max footnote in page
 		var m=line.match(/~(\d+)\.(\d+)/);
 		if (m) {
-			if (footnote[prevpg] && footnote[prevpg].length!==note) {
+			if (footnote[prevpg] && footnote[prevpg].length!==maxnote) {
 				if (warnings[i]&&warnings[i].widget)warnings[i].widget.clear();
 				out[i]={message:"footnote count mismatch "+footnote[prevpg].length+"(database) !="+note+"(this page)"};
 			}
 			prevpg=m[1]+"."+m[2];
-			note=1;
+			note=1;maxnote=note;
 		}
 		//check continuety of footnote
 		line.replace(/#(\d+)/g,function(m,m1){
@@ -133,6 +133,7 @@ var getWarnings=function(content){
 				out[i]={message:"previous footnote "+note};
 			}
 			note=fn;
+			if (note>maxnote) maxnote=note;
 		})
 		//check continuety of p
 		line.replace(/\^(\d+)/g,function(m,m1){
@@ -167,6 +168,7 @@ var createMarker=function(classname,tag) {
 }
 
 var markLine=function(i,rebuild) {
+		if (i>doc.lineCount())return;
 		var M=doc.findMarks({line:i,ch:0},{line:i,ch:65536});
 		M.forEach(function(m){m.clear()});
 		var line=doc.getLine(i);
@@ -300,6 +302,7 @@ var setHotkeys=function(cm){
 	  });
 }
 
+var helpmessage="#footnote, ^paragraph";
 module.exports={markAllLine,markLine,initpage,getimagefilename,setDoc
 ,getPageByLine,automark,validateMark,init,getFootnote,nextWarning,setHotkeys
-,onBeforeChange};
+,onBeforeChange,helpmessage};

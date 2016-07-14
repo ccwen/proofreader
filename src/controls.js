@@ -18,7 +18,7 @@ var markupButtons=React.createClass({
 	,render:function(){
 		return E("div",{},
 			E("button",{onClick:this.automark},"automark"),
-			E("button",{onClick:this.nextwarning,style:styles.msg},this.props.msg)
+			E("button",{onClick:this.nextwarning,style:styles.warnings},this.props.warnings)
 		)	
 	}
 });
@@ -43,10 +43,11 @@ var loadSaveButtons=React.createClass({
 	}
 	,loadfile:function(){
 		var action=this.context.action;
-		localStorage.setItem("workingfn",this.state.fn);		
+		var fn=this.state.fn;
 		this.setState({starttime:new Date(),elapse:0});
 		this.context.getter("file",this.state.fn,function(data){
 			action("loaded",data);
+			localStorage.setItem("workingfn",fn);
 		});
 	}
 	,loadnextfile:function(){
@@ -105,6 +106,7 @@ var Controls=React.createClass({
 	,render:function(){
 		return E("div",{style:{right:20,width:250,zIndex:100,
 			height:120,background:"silver",position:"absolute"}},
+			E("div",{},E("span",{style:styles.note},this.props.helpmessage)),	
 			E(loadSaveButtons,this.props),E(markupButtons,this.props),
 			E("div",{},E("span",{style:styles.note},this.state.note))
 		);
@@ -112,7 +114,7 @@ var Controls=React.createClass({
 })
 var styles={
 	note:{fontSize:"50%"},
-	msg:{fontSize:"50%"},
+	warnings:{fontSize:"50%"},
 	elapse:{fontSize:"50%"}
 }
 /*

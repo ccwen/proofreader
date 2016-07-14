@@ -114,7 +114,8 @@ var Maincomponent = React.createClass({
 	}
   ,render: function() {
 
-  	return E("div",{},E(Controls,{dirty:this.state.dirty,msg:this.state.warningcount+" warnings"}),
+  	return E("div",{},E(Controls,{dirty:this.state.dirty,
+  		warnings:this.state.warningcount+" warnings",helpmessage:rule.helpmessage}),
     	E("div",{style:{display:"flex",flexDirection:"row"}},
       	E("div",{style:{flex:4}},
     			E("img",{ref:"image" ,id:"thumb",style:styles.image,
