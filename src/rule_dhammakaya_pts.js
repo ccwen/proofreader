@@ -142,7 +142,7 @@ var getWarnings=function(content){
 					//reset
 			} else if (prevp+1==p) {
 				//ok
-			} else if (prevp) {//空號
+			} else if (p-prevp<3) {//too close
 				if (warnings[i]&&warnings[i].widget)warnings[i].widget.clear();
 				out[i]={message:"previous p "+prevp};
 			}
@@ -201,10 +201,11 @@ var markLine=function(i,rebuild) {
 			element.marker=marker;
 		});
 
-
-		line.replace(/\[(.+?)\]/g,function(m,m1,idx){
+		//sutta name, has more than 2 leading space
+		line.replace(/ {2,}\[(.+?)\]/g,function(m,m1,idx){
 			var element=createMarker("sutta",m1);
-			var marker=doc.markText({line:i,ch:idx},{line:i,ch:idx+m.length},
+			var s=idx+m.length-m1.length-2; // [ ] take 2 bytes
+			var marker=doc.markText({line:i,ch:s},{line:i,ch:s+m1.length+2},
 				{clearOnEnter:true,replacedWith:element});
 			element.marker=marker;
 		});
