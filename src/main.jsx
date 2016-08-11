@@ -4,18 +4,20 @@ var CodeMirror=require("ksana-codemirror").Component;
 var E=React.createElement;
 var PT=React.PropTypes;
 var styles={image:{height:"100%"}};
-var Magnifier=require("./magnifier");
+//var Magnifier=require("./magnifier");
 var rule=require("./rule_dhammakaya_pts");
 var setRule=require("./rule").setRule;
 var Controls=require("./controls");
 var {store,action,getter,registerGetter,unregisterGetter}=require("./model");
 var fileio=require("./fileio");
+var PDFViewer=require("./pdfviewer");
 
 var Maincomponent = React.createClass({
 	getInitialState:function() {
-		var m=new Magnifier();
+	//	var m=new Magnifier();
 		setRule(rule);
-		return {data:"",pageid:rule.initpage,m,dirty:false,warningcount:0};
+		return {data:"",pageid:rule.initpage,dirty:false,warningcount:0
+		,pdffn:"",page:0};
 	}
 	,prevline:-1
   ,childContextTypes: {
@@ -66,6 +68,10 @@ var Maincomponent = React.createClass({
 		this.setState({dirty:false});
 	}
 	,componentDidUpdate:function() {
+		//var m=rule.getPDFPage(this.state.pageid);
+		//if (m) this.setState(m);
+
+		/*
 		var imgfn=rule.getimagefilename(this.state.pageid);
 		this.state.m.attach({
 		    thumb: '#thumb',
@@ -74,6 +80,7 @@ var Maincomponent = React.createClass({
 		    zoom: 2.5,
 		    zoomable: true
 		});		
+		*/
 	}	
 	,nextwarning:function(){//jump to next warning
 		var pos=this.cm.getCursor();
@@ -88,7 +95,9 @@ var Maincomponent = React.createClass({
 		if (pos.line!==this.prevline) {
 			if (this.prevline>-1) rule.markLine(this.prevline,true);
 			if (this.state.pageid!==pageid) {
-				this.setState({pageid});
+				var m=rule.getPDFPage(pageid);
+				if (m) this.setState({pdffn:m.pdffn,page:m.page,pageid});
+				else this.setState({pageid});
 			}
 		}
 		var index=cm.indexFromPos(pos);
@@ -96,6 +105,7 @@ var Maincomponent = React.createClass({
 		var footnote=rule.getFootnote(str,pageid);
 		action("footnote",footnote);
 		this.prevline=pos.line;
+
 	}
 	,onChange:function(){
 		if (!this.state.dirty && this.doc.getValue()!==this.state.data) {//setcontent will trigger onchange
@@ -117,11 +127,14 @@ var Maincomponent = React.createClass({
   	return E("div",{},E(Controls,{dirty:this.state.dirty,
   		warnings:this.state.warningcount+" warnings",helpmessage:rule.helpmessage}),
     	E("div",{style:{display:"flex",flexDirection:"row"}},
-      	E("div",{style:{flex:4}},
-    			E("img",{ref:"image" ,id:"thumb",style:styles.image,
-		    			src:rule.getimagefilename(this.state.pageid)})
+      	E("div",{style:{flex:2}},
+    			//E("img",{ref:"image" ,id:"thumb",style:styles.image,
+		    	//		src:rule.getimagefilename(this.state.pageid)})
+    			//)
+    			E(PDFViewer,{ref:"pdf", style:styles.image,rwidth:2/5,
+    				page:this.state.page,pdffn:this.state.pdffn})
     			)
-    		,E("div",{style:{flex:8}},
+    		,E("div",{style:{flex:3}},
 	      	E(CodeMirror,{ref:"cm",value:this.state.data,
 	      		onChange:this.onChange,
 	      		onBeforeChange:this.onBeforeChange,

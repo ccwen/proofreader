@@ -24,8 +24,42 @@ var firstpages={
 	9:9,10:4,11:5, //MN
 	12:15,13:14,14:14,15:12 ,16:11,//SN
 	17:13,18:13,19:9,20:9,21:15 //AN
-
 }
+
+var firstpages_pdf={
+	1:58,2:8,3:7,4:6,5:6, //VIN
+	6:5,7:9,8:7,  //DN
+	9:7,10:7,11:5, //MN
+	12:15,13:15,14:13,15:13 ,16:11,//SN
+	17:15,18:9,19:11,20:7,21:15 //AN
+}
+
+var vol2book={6:"dn1",7:"dn2",8:"dn3"
+,9:"mn1",10:"mn2",11:"mn3"
+,12:"sn1",13:"sn2",14:"sn3",15:"sn4",16:"sn5"
+,17:"an1",18:"an2",19:"an3",20:"an4",21:"an5"
+};
+var getPDFPage=function(pageid) {
+	if (!pageid)return;
+	var m=pageid.match(/(\d+)\.(\d+)/);
+	if (!m)return ;
+	vol=parseInt(m[1],10);
+	page=(parseInt(m[2],10)+ (firstpages_pdf[vol]-1)  ) ;
+
+	var pdffn="pdf/"+vol2book[vol]+".pdf";
+
+	return {pdffn,page};
+}
+var getimagefilename=function(pageid) {
+	if (!pageid)return "images/empty.png";
+	var m=pageid.match(/(\d+)\.(\d+)/);
+	vol=parseInt(m[1],10);
+	pg="00"+(parseInt(m[2],10)+ (firstpages[vol]-1)  );
+
+	pg=pg.substr(pg.length-3);
+	return "images/"+vol+"/"+pg+".png";
+}
+
 var init=function(){
 	fs.setDataroot("pts-dhammakaya/htll/")	;
 	var c=fs.readFile("footnote.json",function(err,data){
@@ -216,15 +250,6 @@ var markLine=function(i,rebuild) {
 		},100);//<pb id="1.2b"/>
 	}
 
-var getimagefilename=function(pageid) {
-	if (!pageid)return "images/empty.png";
-	var m=pageid.match(/(\d+)\.(\d+)/);
-	vol=parseInt(m[1],10);
-	pg="00"+(parseInt(m[2],10)+ (firstpages[vol]-1)  );
-
-	pg=pg.substr(pg.length-3);
-	return "images/"+vol+"/"+pg+".png";
-}
 var markAllLine=function() {
 	var M=doc.getAllMarks();
 	M.forEach(function(m){m.clear()});
@@ -306,4 +331,4 @@ var setHotkeys=function(cm){
 var helpmessage="#footnote, ^paragraph";
 module.exports={markAllLine,markLine,initpage,getimagefilename,setDoc
 ,getPageByLine,automark,validateMark,init,getFootnote,nextWarning,setHotkeys
-,onBeforeChange,helpmessage};
+,onBeforeChange,helpmessage,getPDFPage};
