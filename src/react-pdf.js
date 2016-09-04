@@ -3,6 +3,7 @@ from https://github.com/nnarhinen/react-pdf/blob/master/index.js
 adding big canvas scroll inside div 
 http://stackoverflow.com/questions/16128604/scrollable-canvas-inside-div
 
+index.html must have pdf.js and pdf.worker.js from mozilla
 */
 var React = require('react');
 var ReactDOM = require('react-dom');
